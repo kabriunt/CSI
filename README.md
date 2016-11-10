@@ -1,2 +1,2 @@
 # CSI
-Trabajo CSI de una aplicación
+Trabajo CSI (Aplicación de Gestión).
