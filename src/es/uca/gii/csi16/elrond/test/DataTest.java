@@ -72,8 +72,8 @@ public class DataTest {
 	public void TestBoolean2Sql() {
 		
 		System.out.println("\nPRUEBAS Boolean2Sql:");
-		System.out.println("Verdadero: " + Data.Boolean2Sql(true));	//Espaciacion
-		System.out.println("Falso: " + Data.Boolean2Sql(false)); //Espaciacion
+		System.out.println("Verdadero: " + Data.Boolean2Sql(true));
+		System.out.println("Falso: " + Data.Boolean2Sql(false));
 	}
 
 }

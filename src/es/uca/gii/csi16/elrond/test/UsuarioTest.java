@@ -21,7 +21,7 @@ public class UsuarioTest {
 
 	/**
 	 * @throws Exception
-	 */
+	 */ 
 	@Test
 	public void testConstructor() throws Exception {
 		
@@ -39,7 +39,7 @@ public class UsuarioTest {
             Assert.assertEquals(rs.getInt("id"), usuario.getId());
             Assert.assertEquals(rs.getString("nombre"), usuario.getNombre());
             Assert.assertEquals(rs.getString("email"), usuario.getEmail());
-            Assert.assertEquals(rs.getString("password"), usuario.getContrasena());
+            Assert.assertEquals(rs.getString("password"), usuario.getPassword());
             
             System.out.println(usuario.toString());
         }
@@ -54,8 +54,8 @@ public class UsuarioTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void testCreate() throws Exception{ 
-
+	public void testCreate() throws Exception{
+		
 		Usuario usuario = Usuario.Create("Prueba", "prueba6@gmail.com", "prueba");
 		Connection con = null;
         ResultSet rs = null;
@@ -69,8 +69,7 @@ public class UsuarioTest {
             Assert.assertEquals(rs.getInt("id"), usuario.getId());
             Assert.assertEquals(rs.getString("nombre"), usuario.getNombre());
             Assert.assertEquals(rs.getString("email"), usuario.getEmail());
-            Assert.assertEquals(rs.getString("password"), usuario.getContrasena());
-            
+            Assert.assertEquals(rs.getString("password"), usuario.getPassword());
         }
         catch (SQLException ee) { throw ee; }
         finally {
@@ -79,6 +78,10 @@ public class UsuarioTest {
         }
 	}
 	
+	/**
+	 * Comprueba y nos muestras los objetos devueltos por el método Select().
+	 * @throws Exception
+	 */
 	@Test
 	public void testSelect() throws Exception {
 		
@@ -90,16 +93,54 @@ public class UsuarioTest {
 		}
 	}
 	
-	public void testUpdate() throws Exception {//hacerlo con conexion y resultSet
+	/**
+	 * Comprueba que Update() hace las modificaciones en la base de datos.
+	 * @throws Exception
+	 */
+	@Test
+	public void testUpdate() throws Exception {
+
 		Usuario usuario = Usuario.Create("PruebaUpdate", "pruebaupdate@gmail.com", "pruebaupdate");
-		usuario.setNombre("CambioPruebaUpdate");
+		Connection con = null;
+        ResultSet rs = null;
+        
+        usuario.setNombre("CambioPruebaUpdate");
 		usuario.setEmail("cambiopruebaupdate@gmail.com");
-		usuario.setContrasena("cambiopruebaupdate");
+		usuario.setPassword("cambiopruebaupdate");
 		usuario.Update();
+        
+        try {        	
+            con = Data.Connection();                     
+    		rs = con.createStatement().executeQuery("SELECT id, nombre, email, password "
+            		+ "FROM usuario Where email='cambiopruebaupdate@gmail.com';");    
+            rs.next();
+
+            Assert.assertEquals(rs.getInt("id"), usuario.getId());
+            Assert.assertEquals(rs.getString("nombre"), usuario.getNombre());
+            Assert.assertEquals(rs.getString("email"), usuario.getEmail());
+            Assert.assertEquals(rs.getString("password"), usuario.getPassword());
+        }
+        catch (SQLException ee) { throw ee; }
+        finally {
+            if (rs != null) rs.close();
+            if (con != null) con.close();
+        }
 	}
 	
-	public void testDelete() {
-		
-	}
+	/**
+	 * Comprueba que cambia el estado del booleano a través del método Delete().
+	 * @throws Exception
+	 */
+	@Test
+	public void testDelete() throws Exception {
 
+		Usuario usuario = Usuario.Create("Jorge", "JorgeEmail", "JorgePass");
+		
+        try {        	
+            Assert.assertFalse(usuario.getIsDeleted());
+            usuario.Delete();
+            Assert.assertTrue(usuario.getIsDeleted());
+        }
+        catch (SQLException ee) { throw ee; }
+	}
 }

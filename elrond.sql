@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Servidor: localhost
--- Tiempo de generación: 27-10-2016 a las 01:00:37
+-- Tiempo de generación: 10-11-2016 a las 18:25:38
 -- Versión del servidor: 10.1.16-MariaDB
 -- Versión de PHP: 7.0.9
 
@@ -23,33 +23,14 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `tipousuario`
---
-
-CREATE TABLE `tipousuario` (
-  `id` int(10) NOT NULL,
-  `nombre` varchar(150) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Volcado de datos para la tabla `tipousuario`
---
-
-INSERT INTO `tipousuario` (`id`, `nombre`) VALUES
-(1, 'Administrador'),
-(2, 'Miembro');
-
--- --------------------------------------------------------
-
---
 -- Estructura de tabla para la tabla `usuario`
 --
 
 CREATE TABLE `usuario` (
-  `id` int(10) NOT NULL,
-  `nombre` varchar(150) NOT NULL,
-  `email` varchar(250) NOT NULL,
-  `password` varchar(250) NOT NULL
+  `id` int(11) NOT NULL,
+  `nombre` varchar(64) NOT NULL,
+  `email` varchar(128) NOT NULL,
+  `password` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -57,42 +38,34 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id`, `nombre`, `email`, `password`) VALUES
-(1, 'Eduardo Mesa Orcero', 'emesaorcero@gmail.com', 'eduardo'),
-(2, 'Daniel Cabrera López', 'cabriunt@gmail.com', 'daniel'),
-(3, 'Pablo de la Torre', 'pablo.delatorre@uca.es', 'dios'),
-(4, 'Carlos Tocino', 'carlostoci@gmail.com', 'chicovicioso'),
-(5, 'Pepe', 'pepe@gmail.com', 'pepito');
+(1, 'Daniel Cabrera López', 'cabriunt@gmail.com', '12345'),
+(2, 'Prueba', 'prueba@gmail.com', 'prueba'),
+(3, 'Prueba', 'prueba1@gmail.com', 'prueba'),
+(4, 'Prueba', 'prueba2@gmail.com', 'prueba'),
+(5, 'Prueba', 'prueba3@gmail.com', 'prueba'),
+(6, 'Prueba', 'prueba4@gmail.com', 'prueba'),
+(7, 'Prueba', 'prueba5@gmail.com', 'prueba');
 
 --
 -- Índices para tablas volcadas
 --
 
 --
--- Indices de la tabla `tipousuario`
---
-ALTER TABLE `tipousuario`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT de la tabla `tipousuario`
---
-ALTER TABLE `tipousuario`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

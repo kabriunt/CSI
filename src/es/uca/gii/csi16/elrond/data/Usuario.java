@@ -12,26 +12,26 @@ import es.uca.gii.csi16.elrond.data.Data;
 public class Usuario {
 	
 	private int _iId;
-	private String _sNombre, _sEmail, _sContrasena;
+	private String _sNombre, _sEmail, _sPassword;
 	private boolean _bIsDeleted;
 
 	//GETS
 	public int getId() { return _iId; }
 	public String getNombre() { return _sNombre; }
 	public String getEmail() { return _sEmail; }
-	public String getContrasena() { return _sContrasena; }
+	public String getPassword() { return _sPassword; }
 	public boolean getIsDeleted() { return _bIsDeleted; }
 
 	//SETS
 	public void setNombre(String sNombre) { _sNombre = sNombre; }
 	public void setEmail(String sEmail) { _sEmail = sEmail; }
-	public void setContrasena(String sContrasena) { _sContrasena = sContrasena; }
+	public void setPassword(String sPassword) { _sPassword = sPassword; }
 	
 	/**
 	 * @param iId
 	 * @throws Exception
 	 */
-	public Usuario(int iId) throws Exception{
+	public Usuario(int iId) throws Exception {
 		
 		Connection con = null;
         ResultSet rs = null;
@@ -45,7 +45,7 @@ public class Usuario {
             _iId = iId;
             _sNombre = rs.getString ( "nombre" );
             _sEmail = rs.getString ( "email" );
-            _sContrasena = rs.getString ( "password" );
+            _sPassword = rs.getString ( "password" );
             _bIsDeleted = false;
             
         }
@@ -59,24 +59,18 @@ public class Usuario {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	/*public String toString() {
-		return(super.toString() + ":" + _iId + ":" + _sNombre + ":" + _sEmail + ":" + _sContrasena); 
-	}*/
 	public String toString() {
-		return("ID: " + _iId + "\n"
-				+ "Nombre: " + _sNombre + "\n"
-				+ "Email: " + _sEmail + "\n"
-				+ "Contraseña: " + _sContrasena) + "\n";
+		return(super.toString() + ":" + _iId + ":" + _sNombre + ":" + _sEmail + ":" + _sPassword); 
 	}
 	
 	/**
 	 * @param sNombre
 	 * @param sEmail
-	 * @param sContrasena
+	 * @param sPassword
 	 * @return
 	 * @throws Exception
 	 */
-	public static Usuario Create(String sNombre, String sEmail, String sContrasena) throws Exception{
+	public static Usuario Create(String sNombre, String sEmail, String sPassword) throws Exception {
 		
 		Connection con = null;
 		
@@ -86,7 +80,7 @@ public class Usuario {
 					+ "(`nombre`, `email`, `password`) VALUES (" 
 					+ Data.String2Sql(sNombre, true, false) + ", " 
 					+ Data.String2Sql(sEmail, true, false) + ", " 
-					+ Data.String2Sql(sContrasena, true, false) + ");"); 
+					+ Data.String2Sql(sPassword, true, false) + ");"); 
 			
 			return new Usuario(Data.LastId(con));
 			
@@ -97,14 +91,19 @@ public class Usuario {
 		}	
 	}
 	
+	/**
+	 * Borra un registro de la base de datos y pone _bIsDeleted del
+	 * objeto a true
+	 * @throws Exception
+	 */
 	public void Delete() throws Exception {
 		
 		Connection con = null;
 		
 		try {
+			Assert.assertFalse(_bIsDeleted);
 			con = Data.Connection();
 			con.createStatement().executeUpdate("DELETE FROM `usuario` WHERE `id` =" + _iId);
-			Assert.assertTrue(_bIsDeleted);
 			_bIsDeleted = true;
 		}
 		catch (Exception ee) { throw ee; }
@@ -113,17 +112,21 @@ public class Usuario {
 		}
 	}
 	
+	/**
+	 * Actualiza los datos de un objeto en la base de datos
+	 * @throws Exception
+	 */
 	public void Update() throws Exception{
 		
 		Connection con = null;
 		
 		try {
-			Assert.assertTrue(_bIsDeleted);
+			Assert.assertFalse(_bIsDeleted);
 			con = Data.Connection();
 			con.createStatement().executeUpdate("UPDATE `usuario` SET "
 					+ "`nombre` = " + Data.String2Sql(_sNombre, true, false)
 					+ ", `email` = " + Data.String2Sql(_sEmail, true, false)
-					+ ", `password` = " + Data.String2Sql(_sContrasena, true, false)
+					+ ", `password` = " + Data.String2Sql(_sPassword, true, false)
 					+ " WHERE `id` = "+ _iId);
 		}
 		catch (Exception ee) { throw ee; }
@@ -132,7 +135,15 @@ public class Usuario {
 		}
 	}
 	
-	public static ArrayList<Usuario> Select(String sNombre, String sEmail, String sContrasena) throws Exception {
+	/**
+	 * Hace un select a la base de datos con datos de búsqueda que se pasan por parametro.
+	 * @param sNombre
+	 * @param sEmail
+	 * @param sPassword
+	 * @return Devuelve un ArrayList de objetos
+	 * @throws Exception
+	 */
+	public static ArrayList<Usuario> Select(String sNombre, String sEmail, String sPassword) throws Exception {
 		
 		ArrayList<Usuario> aResultado = new ArrayList<Usuario>();
 		Connection con = null;
@@ -141,7 +152,7 @@ public class Usuario {
 		try {
 			con = Data.Connection();
 			rs = con.createStatement().executeQuery("SELECT `id`,`nombre`,`email`,`password` "
-					+ "FROM `usuario` "+ Where(sNombre,sEmail,sContrasena));
+					+ "FROM `usuario` "+ Where(sNombre,sEmail,sPassword));
 			while (rs.next()) {
 				aResultado.add(new Usuario(rs.getInt("id")));
 			}
@@ -154,20 +165,27 @@ public class Usuario {
 		return aResultado;
 	}
 	
-	private static String Where(String sNombre, String sEmail, String sContrasena) {
+	/**
+	 * Concatena los parametros de entrada que no sean nulos.
+	 * @param sNombre
+	 * @param sEmail
+	 * @param sPassword
+	 * @return Devuelve un String 
+	 */
+	private static String Where(String sNombre, String sEmail, String sPassword) {
 		
-		String sCad = "" ;
+		String sCadena = "" ;
 
 		if (sNombre != null)
-			sCad += "`nombre` = " + Data.String2Sql(sNombre,true,false) + " and ";
+			sCadena += "`nombre` LIKE " + Data.String2Sql(sNombre,true,false) + " and ";
 		if (sEmail != null)
-			sCad += "`email` = " + Data.String2Sql(sEmail, true, false) + " and ";
-		if (sContrasena != null)
-			sCad += "`password` = " + Data.String2Sql(sContrasena, true, false) + " and ";
+			sCadena += "`email` LIKE " + Data.String2Sql(sEmail, true, false) + " and ";
+		if (sPassword != null)
+			sCadena += "`password` LIKE " + Data.String2Sql(sPassword, true, false) + " and ";
 		
-		if (sCad.length() > 0)
-			sCad = " WHERE " + sCad.substring(0, sCad.length() - 5);
+		if (sCadena.length() > 0)
+			sCadena = " WHERE " + sCadena.substring(0, sCadena.length() - 5);
 		
-		return sCad;
+		return sCadena;
 	}
 }
